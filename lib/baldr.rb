@@ -1,3 +1,1 @@
-module Baldr
-
-end
+require 'baldr/version'

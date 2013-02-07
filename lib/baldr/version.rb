@@ -1,3 +1,3 @@
-module Buldr
-  VERSION = '0.0.1'
+module Baldr
+  VERSION = '0.0.0'
 end
