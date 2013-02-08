@@ -1,28 +1,27 @@
 class Baldr::Loop
 
+  attr_reader :id, :segments
+
   def initialize(id, builder)
-    @elements = []
-    @children = []
+    @segments = [Baldr::Segment.new(id, builder)]
     @builder = builder
-    @id = id.upcase.to_s
+    @id = id
   end
 
-  def method_missing(method, *args, &block)
-    if method.to_s.start_with?(@id)
-      element = method.to_s[-2..-1].to_i - 1
-      @elements[element] = args[0]
-    else
-      child = VanillaX12::Segment.new(method, @builder)
-      child.instance_eval &block if block_given?
-      @children << child
-    end
+  def add_segment(segment)
+    @segments << segment
+  end
+
+  def count
+    @segments.length
+  end
+
+  def current_segment
+    @segments.last
   end
 
   def draw
-    a = [@id] + @elements
-    s = @builder.separators
-    result = ["#{a.join(s[:element])}#{s[:segment]}"] + @children.map{ |c| c.draw }
-    result.join("\n")
+    @segments.map(&:draw).join("\n")
   end
 
 end

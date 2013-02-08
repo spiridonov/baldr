@@ -1,1 +1,20 @@
 require 'baldr/version'
+
+require 'baldr/builder'
+require 'baldr/segment'
+require 'baldr/loop'
+
+require 'baldr/renderer/x12'
+require 'baldr/renderer/json'
+
+require 'baldr/grammar'
+require 'baldr/grammar/version4010'
+require 'baldr/grammar/version4010/set204'
+require 'baldr/grammar/version4010/set210'
+require 'baldr/grammar/version4010/set214'
+require 'baldr/grammar/version4010/set810'
+require 'baldr/grammar/version4010/set850'
+require 'baldr/grammar/version4010/set855'
+require 'baldr/grammar/version4010/set856'
+require 'baldr/grammar/version4010/set990'
+require 'baldr/grammar/version4010/set997'

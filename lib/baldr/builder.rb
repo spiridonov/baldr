@@ -1,25 +1,40 @@
 class Baldr::Builder
 
+  attr_accessor :separators
+
   DEFAULT_SEPARATORS = {
     element: '*',
     segment: '~'
   }.freeze
 
-  attr_accessor :separators
-
   def initialize(params = {})
-    @children = []
+    @envelope = []
+    @transactions = []
     @separators = params[:separators] || DEFAULT_SEPARATORS
   end
 
-  def method_missing(method, *args, &block)
-    child = VanillaX12::Segment.new(method, self)
-    child.instance_eval &block
-    @children << child
+  def ST(&block)
+    transaction = Baldr::Segment.new('ST', self)
+    @transactions << transaction
+
+    transaction.instance_eval &block if block_given?
   end
 
   def draw
-    @children.map(&:draw).join("\n")
+    @transactions.map(&:draw).join("\n")
   end
+
+  def valid?
+    @transactions.each do |transaction|
+      tset = transaction.element(1)
+      grammar = Baldr::Grammar::Version4010.const_get("Set#{tset}")::STRUCTURE
+      transaction.valid?(grammar)
+      #grammar.
+    end
+  end
+
+  #def
+  #
+  #end
 
 end
