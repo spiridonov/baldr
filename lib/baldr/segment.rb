@@ -31,6 +31,12 @@ class Baldr::Segment
   end
 
   def valid?(grammar)
+    sg = Baldr::Grammar::Version4010::SEGMENTS
+
+    sg[@id].each.with_index do |sge, i|
+      raise "#{@id} #{i+1} required" if sge[:required] && @elements[i].nil?
+    end
+
     if grammar[:level]
       l = 0
       grammar[:level].each do |g|
