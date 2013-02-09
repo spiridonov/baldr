@@ -1,6 +1,7 @@
 require 'baldr/version'
 
 require 'baldr/builder'
+require 'baldr/parser'
 require 'baldr/segment'
 require 'baldr/loop'
 

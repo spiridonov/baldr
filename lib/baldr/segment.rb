@@ -2,11 +2,13 @@ class Baldr::Segment
 
   attr_reader :id, :children
 
+  #SEGMENT_ID = /\A[A-Z][A-Z0-9]{1,2}\Z/
+
   def initialize(id, builder)
     @elements = []
     @children = []
     @builder = builder
-    @id = id.upcase.to_s
+    @id = id.to_s.upcase
   end
 
   def element(index)

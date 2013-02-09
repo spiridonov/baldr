@@ -52,7 +52,7 @@ describe Baldr::Builder do
       }
     }
 
-    puts b.draw
+    #puts b.draw
     b.valid?
 
   end
