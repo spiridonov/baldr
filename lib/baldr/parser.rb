@@ -3,14 +3,14 @@ module Baldr::Parser
 
   def load(input)
     input = fix_encoding(input)
-    quick_check(input)
+    quick_isa_check(input)
     separators = detect_separators(input)
     segments = split_segments(input, separators)
 
   end
 
-  def quick_check(input)
-    raise 'doesn`t begin with ISA' unless input.start_with?('ISA')
+  def quick_isa_check(input)
+    raise 'doesn`t begin with ISA...' unless input.start_with?('ISA')
   end
 
   def fix_encoding(input)

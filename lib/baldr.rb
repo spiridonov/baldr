@@ -10,6 +10,7 @@ require 'baldr/renderer/json'
 
 require 'baldr/grammar'
 require 'baldr/grammar/version4010'
+require 'baldr/grammar/version4010/envelope'
 require 'baldr/grammar/version4010/set204'
 require 'baldr/grammar/version4010/set210'
 require 'baldr/grammar/version4010/set214'

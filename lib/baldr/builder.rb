@@ -1,40 +1,25 @@
 class Baldr::Builder
 
-  attr_accessor :separators
-
-  DEFAULT_SEPARATORS = {
-    element: '*',
-    segment: '~'
-  }.freeze
-
   def initialize(params = {})
     @envelope = []
     @transactions = []
-    @separators = params[:separators] || DEFAULT_SEPARATORS
+    @version = params[:version] || '4010'
   end
 
   def ST(&block)
-    transaction = Baldr::Segment.new('ST', self)
+    transaction = Baldr::Segment.new('ST')
     @transactions << transaction
 
     transaction.instance_eval &block if block_given?
   end
 
-  def draw
-    @transactions.map(&:draw).join("\n")
-  end
-
-  def valid?
+  def validate!
     @transactions.each do |transaction|
-      tset = transaction.element(1)
-      grammar = Baldr::Grammar::Version4010.const_get("Set#{tset}")::STRUCTURE
-      transaction.valid?(grammar)
-      #grammar.
+      version = Baldr::Grammar.const_get("Version#{@version}")
+      record_defs = version::RECORD_DEFS
+      grammar = version.const_get("Set#{transaction.ST01}")::STRUCTURE
+      transaction.validate!(grammar, record_defs)
     end
   end
-
-  #def
-  #
-  #end
 
 end

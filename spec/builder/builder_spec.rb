@@ -52,8 +52,8 @@ describe Baldr::Builder do
       }
     }
 
-    #puts b.draw
-    b.valid?
+    #b.draw
+    b.validate!
 
   end
 end

@@ -2,29 +2,27 @@ class Baldr::Segment
 
   attr_reader :id, :children
 
-  #SEGMENT_ID = /\A[A-Z][A-Z0-9]{1,2}\Z/
-
-  def initialize(id, builder)
+  def initialize(id)
     @elements = []
     @children = []
-    @builder = builder
     @id = id.to_s.upcase
   end
 
-  def element(index)
-    @elements[index - 1]
-  end
-
   def method_missing(method, *args, &block)
-    if method.to_s.start_with?(@id)
+    method = method.to_s
+    if method.start_with?(@id) && method.length == id.length + 2
       element = method.to_s[-2..-1].to_i - 1
-      @elements[element] = args[0]
+      if args.empty?
+        @elements[element]
+      else
+        @elements[element] = args[0]
+      end
     else
       if @children.last && @children.last.id.to_s == method.to_s
         loop = @children.last
-        loop.add_segment Baldr::Segment.new(method, @builder)
+        loop.add_segment Baldr::Segment.new(method)
       else
-        loop = Baldr::Loop.new(method, @builder)
+        loop = Baldr::Loop.new(method)
         @children << loop
       end
 
@@ -32,11 +30,13 @@ class Baldr::Segment
     end
   end
 
-  def valid?(grammar)
-    sg = Baldr::Grammar::Version4010::SEGMENTS
+  def validate!(grammar, record_defs)
+    raise "unknown segment #{@id}" unless record_defs[@id]
 
-    sg[@id].each.with_index do |sge, i|
-      raise "#{@id} #{i+1} required" if sge[:required] && @elements[i].nil?
+    record_defs[@id].each.with_index do |r, i|
+      element = @elements[i]
+      check_required(r, element)
+      self.send("check_#{r[:type]}", r, element) unless element.nil?
     end
 
     if grammar[:level]
@@ -48,7 +48,7 @@ class Baldr::Segment
           raise "#{loop.id} too less #{loop.count} instead of #{g[:min]}\n" if loop.count < g[:min]
 
           loop.segments.each do |segment|
-            segment.valid?(g)
+            segment.validate!(g, record_defs)
           end
 
           l += 1
@@ -59,11 +59,45 @@ class Baldr::Segment
     end
   end
 
-  def draw
-    a = [@id] + @elements
-    s = @builder.separators
-    result = ["#{a.join(s[:element])}#{s[:segment]}"] + @children.map{ |c| c.draw }
-    result.join("\n")
+  def check_required(r, element)
+    if r[:required] && (element.nil? || element.empty?)
+      raise "#{r[:id]} is required"
+    end
+  end
+
+  def check_string(r, element)
+    check_max_and_min_for_string(r, element)
+  end
+
+  def check_id(r, element)
+    check_max_and_min_for_string(r, element)
+
+  end
+
+  def check_max_and_min_for_string(r, element)
+    if r[:max] && element.length > r[:max]
+      raise "#{r[:id]} is too long (maximum #{r[:max]})"
+    end
+
+    if r[:min] && element.length < r[:min]
+      raise "#{r[:id]} is too short (minimum #{r[:min]})"
+    end
+  end
+
+  def check_time(r, element)
+    
+  end
+
+  def check_date(r, element)
+
+  end
+
+  def check_number(r, element)
+
+  end
+
+  def check_real(r, element)
+
   end
 
 end
