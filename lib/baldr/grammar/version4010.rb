@@ -1,5 +1,9 @@
 module Baldr::Grammar::Version4010
 
+  def self.for_transaction_set(id)
+    self.const_get("Set#{id}")
+  end
+
   RECORD_DEFS = {
     'AAA' => [
       {id: 'AAA01', required: true, max: 1, type: :id},

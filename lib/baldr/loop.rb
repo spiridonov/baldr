@@ -15,6 +15,10 @@ class Baldr::Loop
     @segments.length
   end
 
+  def number_of_segments
+    @segments.map(&:number_of_segments).sum
+  end
+
   def current_segment
     @segments.last
   end

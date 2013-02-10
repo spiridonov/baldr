@@ -5,3 +5,5 @@ gemspec
 
 gem 'rake'
 gem 'rspec'
+
+#gem 'activesupport', "~> 3.1"

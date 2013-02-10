@@ -1,4 +1,5 @@
 require 'baldr'
+require 'active_support/all'
 
 #Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 

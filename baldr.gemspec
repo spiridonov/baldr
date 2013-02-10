@@ -12,10 +12,11 @@ Gem::Specification.new do |gem|
   gem.description   = "Lightweight EDI X12 translator"
   gem.authors       = ["Stanislav Spiridonov"]
   gem.email         = 'stanislav@spiridonov.pro'
+
+  gem.add_dependency 'activesupport', '~> 3.1'
+
   gem.files         = `git ls-files lib/`.split($/)
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
   gem.homepage      = 'https://github.com/spiridonov/baldr'
-
-  #gem.add_dependency 'activerecord', '~> 3.1'
 end

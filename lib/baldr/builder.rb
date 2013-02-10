@@ -13,11 +13,15 @@ class Baldr::Builder
     transaction.instance_eval &block if block_given?
   end
 
+  def number_of_segments
+    @transactions.map(&:number_of_segments).sum
+  end
+
   def validate!
     @transactions.each do |transaction|
-      version = Baldr::Grammar.const_get("Version#{@version}")
+      version = Baldr::Grammar.for_version(@version)
       record_defs = version::RECORD_DEFS
-      grammar = version.const_get("Set#{transaction.ST01}")::STRUCTURE
+      grammar = version.for_transaction_set(transaction.ST01)::STRUCTURE
       transaction.validate!(grammar, record_defs)
     end
   end

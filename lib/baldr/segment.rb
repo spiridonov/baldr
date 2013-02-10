@@ -30,6 +30,14 @@ class Baldr::Segment
     end
   end
 
+  def prepare!
+
+  end
+
+  def number_of_segments
+    1 + @children.map(&:number_of_segments).sum
+  end
+
   def validate!(grammar, record_defs)
     raise "unknown segment #{@id}" unless record_defs[@id]
 
@@ -60,7 +68,7 @@ class Baldr::Segment
   end
 
   def check_required(r, element)
-    if r[:required] && (element.nil? || element.empty?)
+    if r[:required] && element.blank?
       raise "#{r[:id]} is required"
     end
   end
