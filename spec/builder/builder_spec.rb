@@ -54,7 +54,7 @@ describe Baldr::Builder do
 
     #b.draw
     #puts b.number_of_segments
-    b.validate!
+
 
   end
 end

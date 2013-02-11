@@ -21,7 +21,7 @@ module Baldr::Grammar::Version4010::Set810
       {id: 'ITD', min: 0, max: 99999},
       {id: 'DTM', min: 0, max: 10},
       {id: 'FOB', min: 0, max: 1},
-      {id: 'Pid', min: 0, max: 200},
+      {id: 'PID', min: 0, max: 200},
       {id: 'MEA', min: 0, max: 40},
       {id: 'PWK', min: 0, max: 25},
       {id: 'PKG', min: 0, max: 25},
@@ -51,7 +51,7 @@ module Baldr::Grammar::Version4010::Set810
         {id: 'CTP', min: 0, max: 25},
         {id: 'PAM', min: 0, max: 10},
         {id: 'MEA', min: 0, max: 40},
-        {id: 'Pid', min: 0, max: 1000, level: [
+        {id: 'PID', min: 0, max: 1000, level: [
           {id: 'MEA', min: 0, max: 10},
         ]},
         {id: 'PWK', min: 0, max: 25},
@@ -72,7 +72,7 @@ module Baldr::Grammar::Version4010::Set810
         {id: 'SLN', min: 0, max: 1000, level: [
           {id: 'DTM', min: 0, max: 1},
           {id: 'REF', min: 0, max: 99999},
-          {id: 'Pid', min: 0, max: 1000},
+          {id: 'PID', min: 0, max: 1000},
           {id: 'SAC', min: 0, max: 25},
           {id: 'TC2', min: 0, max: 2},
           {id: 'TXI', min: 0, max: 10},
@@ -104,7 +104,7 @@ module Baldr::Grammar::Version4010::Set810
         {id: 'TXI', min: 0, max: 10},
       ]},
       {id: 'ISS', min: 0, max: 99999, level: [
-        {id: 'Pid', min: 0, max: 1},
+        {id: 'PID', min: 0, max: 1},
       ]},
       {id: 'CTT', min: 0, max: 1},
       {id: 'SE', min: 1, max: 1},

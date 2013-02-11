@@ -55,7 +55,7 @@ module Baldr::Grammar::Version4010::Set204
             ]},
           ]},
         ]},
-        {id: 'Oid', min: 0, max: 999, level: [
+        {id: 'OID', min: 0, max: 999, level: [
           {id: 'G62', min: 0, max: 2},
           {id: 'LAD', min: 0, max: 999},
           {id: 'L5', min: 0, max: 99, level: [

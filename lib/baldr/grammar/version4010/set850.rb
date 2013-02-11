@@ -24,7 +24,7 @@ module Baldr::Grammar::Version4010::Set850
       {id: 'LDT', min: 0, max: 12},
       {id: 'LIN', min: 0, max: 5},
       {id: 'SI', min: 0, max: 99999},
-      {id: 'Pid', min: 0, max: 200},
+      {id: 'PID', min: 0, max: 200},
       {id: 'MEA', min: 0, max: 40},
       {id: 'PWK', min: 0, max: 25},
       {id: 'PKG', min: 0, max: 200},
@@ -100,7 +100,7 @@ module Baldr::Grammar::Version4010::Set850
         ]},
         {id: 'PAM', min: 0, max: 10},
         {id: 'MEA', min: 0, max: 40},
-        {id: 'Pid', min: 0, max: 1000, level: [
+        {id: 'PID', min: 0, max: 1000, level: [
           {id: 'MEA', min: 0, max: 10},
         ]},
         {id: 'PWK', min: 0, max: 25},
@@ -188,7 +188,7 @@ module Baldr::Grammar::Version4010::Set850
         {id: 'SLN', min: 0, max: 1000, level: [
           {id: 'MSG', min: 0, max: 99999},
           {id: 'SI', min: 0, max: 99999},
-          {id: 'Pid', min: 0, max: 1000},
+          {id: 'PID', min: 0, max: 1000},
           {id: 'PO3', min: 0, max: 104},
           {id: 'TC2', min: 0, max: 99999},
           {id: 'ADV', min: 0, max: 99999},
