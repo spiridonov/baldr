@@ -7,7 +7,11 @@ module Baldr::Parser
     quick_isa_check(input)
     separators = detect_separators(input)
     source = split_segments(input, separators)
-    build_tree(source)
+    envelopes = build_tree(source)
+
+    envelopes.each do |e|
+      Baldr::Validator.validate! e
+    end
   end
 
   protected
@@ -44,14 +48,8 @@ module Baldr::Parser
     version = Baldr::Grammar.for_version(isa[12])
     grammar = version::Envelope::STRUCTURE
 
-    envelopes = build_segment(source.to_enum, grammar, version)
-
-    envelopes.segments.each do |e|
-      Baldr::Validator.validate! e
-    end
-
-    #grammar = version.for_transaction_set(transaction.ST01)::STRUCTURE
-    #transaction.validate!(grammar, record_defs)
+    loop = build_segment(source.to_enum, grammar, version)
+    loop.segments
   end
 
   def build_segment(enumerator, grammar, version)

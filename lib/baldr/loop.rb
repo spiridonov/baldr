@@ -3,7 +3,6 @@ class Baldr::Loop
   attr_reader :id, :segments
 
   def initialize(id)
-    #@segments = [Baldr::Segment.new(id)]
     @segments = []
     @id = id
   end

@@ -5,7 +5,7 @@ class Baldr::Envelope < Baldr::Segment
   end
 
   def prepare!
-    #@children
+
   end
 
   def GS(&block)

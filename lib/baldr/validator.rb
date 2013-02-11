@@ -4,7 +4,6 @@ module Baldr::Validator
 
   def validate!(envelope)
     version = Baldr::Grammar.for_version(envelope.standard_version_number)
-    #grammar = version.for_transaction_set(transaction.ST01)::STRUCTURE
     grammar = version::Envelope::STRUCTURE
 
     validate_tree!(envelope, grammar, version)
