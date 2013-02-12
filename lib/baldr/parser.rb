@@ -1,21 +1,34 @@
-module Baldr::Parser
+class Baldr::Parser
 
-  extend self
+  attr_reader :error, :envelopes, :separators
 
-  def load(input)
+  def initialize
+
+  end
+
+  def self.load(input)
+    new.parse(input)
+  end
+
+  def successful?
+    @error.nil?
+  end
+
+  def parse(input)
     input = fix_encoding(input)
     quick_isa_check(input)
-    separators = detect_separators(input)
-    source = split_segments(input, separators)
-    envelopes = build_tree(source)
-    envelopes.each { |e| Baldr::Validator.validate! e }
-    envelopes
+    @separators = detect_separators(input)
+    @envelopes = build_tree(split_segments(input, separators))
+    @envelopes.each { |e| Baldr::Validator.validate! e }
+    self
+  rescue Baldr::ParseError => e
+    @error = e.message
   end
 
   protected
 
   def quick_isa_check(input)
-    raise 'doesn\'t begin with ISA...' unless input.start_with?('ISA')
+    raise "doesn't begin with ISA..." unless input.start_with?('ISA')
   end
 
   def fix_encoding(input)

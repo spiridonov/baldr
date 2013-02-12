@@ -9,6 +9,9 @@ require 'baldr/functional_group'
 require 'baldr/loop'
 require 'baldr/validator'
 
+require 'baldr/parse_error'
+
+require 'baldr/renderer'
 require 'baldr/renderer/x12'
 require 'baldr/renderer/json'
 

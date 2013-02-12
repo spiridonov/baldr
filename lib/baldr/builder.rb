@@ -13,8 +13,8 @@ class Baldr::Builder
     transaction.instance_eval &block if block_given?
   end
 
-  def number_of_segments
-    @transactions.map(&:number_of_segments).sum
+  def prepare!
+
   end
 
 end

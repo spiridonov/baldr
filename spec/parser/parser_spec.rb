@@ -2,16 +2,27 @@ require 'spec_helper'
 
 describe Baldr::Parser do
 
-  Dir.glob('spec/support/x12/**/*.EDI').each do |file|
+  Dir.glob('spec/support/parsing/x12/**/*.EDI').each do |file|
     context file do
-      let(:parser) { Baldr::Parser }
 
-      example 'smoke test' do
-        parser.load(File.read(file))
-
-        #subject { EdiWalker.new(input_source) }
-        #subject['ST02'].should eq input_source['ST']['ST02']
+      it 'should parse file' do
+        input = File.read(file)
+        parser = Baldr::Parser.load(input)
       end
+
+    end
+  end
+
+  Dir.glob('spec/support/matching/x12/**/*.EDI').each do |file|
+    context file do
+
+      it 'should match input file and rendered tree from this file' do
+        input = File.read(file)
+        parser = Baldr::Parser.load(input)
+        output = Baldr::Renderer::X12.draw(parser.envelopes.first, {separators: parser.separators})
+        output.should eq input
+      end
+
     end
   end
 

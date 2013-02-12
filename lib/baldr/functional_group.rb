@@ -29,7 +29,7 @@ class Baldr::FunctionalGroup < Baldr::Segment
       raise "wrong transactions number: #{trailer.GE01} in GE01, but real number is #{transaction_loop.segments.count}"
     end
     if trailer.GE02 != self.group_control_number
-      raise "group control numbers don\'t match: #{trailer.GE02} in GE02 and #{self.group_control_number} in GS06"
+      raise "group control numbers don't match: #{trailer.GE02} in GE02 and #{self.group_control_number} in GS06"
     end
   end
 

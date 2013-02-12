@@ -46,18 +46,12 @@ class Baldr::Envelope < Baldr::Segment
 
   def custom_validate!(version)
     func_group_loop = @children.select{ |c| c.id == 'GS' }.first
-    func_group_loop.segments.each do |func_group|
-      #if version.for_transaction_set(transaction.ST01)::FUNCTIONAL_GROUP != self.functional_identifier_code
-      #  raise "wrong transaction #{transaction.ST01} in functional group #{self.functional_identifier_code}"
-      #end
-    end
-
     trailer = @children.last.segments.first
     if trailer.IEA01.to_i != func_group_loop.segments.count
       raise "wrong functional groups number: #{trailer.IEA01} in IEA01, but real number is #{func_group_loop.segments.count}"
     end
     if trailer.IEA02 != self.interchange_control_number
-      raise "interchange control numbers don\'t match: #{trailer.IEA02} in IEA02 and #{self.interchange_control_number} in ISA13"
+      raise "interchange control numbers don't match: #{trailer.IEA02} in IEA02 and #{self.interchange_control_number} in ISA13"
     end
   end
 
