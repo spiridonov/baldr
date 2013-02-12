@@ -13,13 +13,6 @@ module Baldr::Renderer::X12
     draw_segment(segment, separators).join
   end
 
-  #def draw
-  #  a = [@id] + @elements
-  #  s = @builder.separators
-  #  result = ["#{a.join(s[:element])}#{s[:segment]}"] + @children.map{ |c| c.draw }
-  #  result.join("\n")
-  #end
-
   def draw_segment(segment, separators)
     a = [segment.id] + segment.elements
 
