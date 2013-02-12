@@ -20,14 +20,14 @@ class Baldr::Segment
     else
       if @children.last && @children.last.id.to_s == method.to_s
         loop = @children.last
-        loop.add_segment Baldr::Segment.new(method)
       else
         loop = Baldr::Loop.new(method)
-        loop.add_segment Baldr::Segment.new(method)
         @children << loop
       end
 
-      loop.current_segment.instance_eval &block if block_given?
+      segment = Baldr::Segment.new(method)
+      segment.instance_eval &block if block_given?
+      loop.add segment
     end
   end
 
@@ -36,6 +36,10 @@ class Baldr::Segment
   end
 
   def prepare!
+
+  end
+
+  def custom_validate!(version)
 
   end
 

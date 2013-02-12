@@ -7,7 +7,7 @@ class Baldr::Loop
     @id = id
   end
 
-  def add_segment(segment)
+  def add(segment)
     @segments << segment
   end
 

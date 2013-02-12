@@ -8,16 +8,14 @@ module Baldr::Parser
     separators = detect_separators(input)
     source = split_segments(input, separators)
     envelopes = build_tree(source)
-
-    envelopes.each do |e|
-      Baldr::Validator.validate! e
-    end
+    envelopes.each { |e| Baldr::Validator.validate! e }
+    envelopes
   end
 
   protected
 
   def quick_isa_check(input)
-    raise 'doesn`t begin with ISA...' unless input.start_with?('ISA')
+    raise 'doesn\'t begin with ISA...' unless input.start_with?('ISA')
   end
 
   def fix_encoding(input)
@@ -26,7 +24,7 @@ module Baldr::Parser
 
   def detect_separators(input)
     ee = e = input[3]
-    ee = "\\#{e}" if %w(* + . ?).include? e
+    ee = "\\#{e}" if %w(* + . ?).include? e # escape separator symbol for using in regexp
 
     regexp = /\AISA(#{ee}[^#{e}]+){15}#{ee}(.)(\W*)[A-Z][A-Z0-9]{1,2}/
 
@@ -40,6 +38,8 @@ module Baldr::Parser
   end
 
   def split_segments(input, separators)
+    raise 'there are wrong characters in the end of the interchange' unless input.end_with?(separators[:segment])
+
     input.split(separators[:segment]).map{ |s| s.split(separators[:element]) }
   end
 
@@ -47,7 +47,6 @@ module Baldr::Parser
     isa = source.first
     version = Baldr::Grammar.for_version(isa[12])
     grammar = version::Envelope::STRUCTURE
-
     loop = build_segment(source.to_enum, grammar, version)
     loop.segments
   end
@@ -63,7 +62,7 @@ module Baldr::Parser
       loop ||= Baldr::Loop.new(current[0])
       segment_class = Baldr.const_get((grammar[:class] || :segment).to_s.camelize)
       segment = segment_class.new(current[0])
-      loop.segments << segment
+      loop.add segment
 
       segment.elements = current[1..-1]
 

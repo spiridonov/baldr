@@ -28,23 +28,27 @@ module Baldr::Validator
     sub_grammar.fetch(:level, []).each do |g|
       loop = segment.children[l]
       if loop && loop.id.to_s == g[:id]
-        raise "#{loop.id} too much #{loop.count} instead of #{g[:max]}\n" if loop.count > g[:max]
-        raise "#{loop.id} too less #{loop.count} instead of #{g[:min]}\n" if loop.count < g[:min]
+        check_loop_count(loop, g)
 
-        loop.segments.each do |child|
-          validate_tree!(child, g, version)
-        end
+        loop.segments.each { |child| validate_tree!(child, g, version) }
 
         l += 1
       else
-        raise "no #{g[:id]} segment here!" if g[:min] > 0
+        raise "segment #{g[:id]} is required" if g[:min] > 0
       end
     end
+
+    segment.custom_validate!(version)
+  end
+
+  def check_loop_count(loop, grammar)
+    raise "#{loop.id} loop is too long: #{loop.count} segments, maximum #{grammar[:max]}" if loop.count > grammar[:max]
+    raise "#{loop.id} loop is too short: #{loop.count} segments, minimum #{grammar[:min]}" if loop.count < grammar[:min]
   end
 
   def check_required(r, element)
     if r[:required] && (element.nil? || element.size == 0)
-      raise "#{r[:id]} is required"
+      raise "element #{r[:id]} is required"
     end
   end
 
@@ -59,11 +63,11 @@ module Baldr::Validator
 
   def check_max_and_min_for_string(r, element)
     if r[:max] && element.length > r[:max]
-      raise "#{r[:id]} is too long (maximum #{r[:max]})"
+      raise "#{r[:id]} is too long: #{element.length} characters, maximum #{r[:max]}"
     end
 
     if r[:min] && element.length < r[:min]
-      raise "#{r[:id]} is too short (minimum #{r[:min]})"
+      raise "#{r[:id]} is too short: #{element.length} characters, minimum #{r[:min]}"
     end
   end
 
