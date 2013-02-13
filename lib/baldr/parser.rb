@@ -36,12 +36,12 @@ class Baldr::Parser
   end
 
   def detect_separators(input)
-    ee = e = input[3]
-    ee = "\\#{e}" if %w(* + . ?).include? e # escape separator symbol for using in regexp
+    e = input[3]
+    ee = Regexp.quote(e)
 
     regexp = /\AISA(#{ee}[^#{e}]+){15}#{ee}(.)(\W*)[A-Z][A-Z0-9]{1,2}/
 
-    raise 'segment separator could not be found' unless input =~ regexp
+    raise 'segment separator could not be found' if input !~ regexp
 
     {
       element: e,
@@ -51,9 +51,12 @@ class Baldr::Parser
   end
 
   def split_segments(input, separators)
-    raise 'there are wrong characters in the end of the interchange' unless input.end_with?(separators[:segment])
-
-    input.split(separators[:segment]).map{ |s| s.split(separators[:element]) }
+    s = Regexp.quote(separators[:segment])
+    if input =~ /#{s}\s*\z/
+      input.split(separators[:segment]).map{ |s| s.split(separators[:element]) }
+    else
+      raise 'there are wrong characters in the end of the interchange'
+    end
   end
 
   def build_tree(source)
