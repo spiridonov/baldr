@@ -17,6 +17,7 @@ describe Baldr::Parser do
       it 'should match input file and rendered tree from this file' do
         input = File.read(file)
         parser = Baldr::Parser.load(input)
+        parser.successful?.should eq true
         output = Baldr::Renderer::X12.draw(parser.envelopes.first, {separators: parser.separators})
         output.should eq input
       end

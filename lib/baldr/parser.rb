@@ -2,10 +2,6 @@ class Baldr::Parser
 
   attr_reader :error, :envelopes, :separators
 
-  def initialize
-
-  end
-
   def self.load(input)
     new.parse(input)
   end
@@ -68,37 +64,29 @@ class Baldr::Parser
   end
 
   def build_segment(enumerator, grammar, version)
-    begin
-      current = enumerator.peek
-    rescue StopIteration
-      return
-    end
+    current = enumerator.peek
 
     while grammar[:id] == current[0]
       loop ||= Baldr::Loop.new(current[0])
-      segment_class = Baldr.const_get((grammar[:class] || :segment).to_s.camelize)
-      segment = segment_class.new(current[0])
-      loop.add segment
-
+      segment = Baldr.const_get((grammar[:class] || :segment).to_s.camelize).new(current[0])
       segment.elements = current[1..-1]
+      loop.add segment
 
       enumerator.next
 
       sub_grammar = segment.sub_grammar(version) || grammar
-
       sub_grammar.fetch(:level, []).each do |g|
         child = build_segment(enumerator, g, version)
         segment.children << child if child
       end
 
-      begin
-        current = enumerator.peek
-      rescue StopIteration
-        return loop
-      end
+      current = enumerator.peek
     end
 
     loop
+
+  rescue StopIteration
+    return loop
   end
 
 end
