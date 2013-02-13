@@ -1,9 +1,9 @@
 class Baldr::Parser
 
-  attr_reader :error, :envelopes, :separators
+  attr_reader :error, :envelopes, :separators, :input
 
-  def self.load(input)
-    new.parse(input)
+  def initialize(input)
+    parse(input)
   end
 
   def successful?
@@ -11,8 +11,7 @@ class Baldr::Parser
   end
 
   def parse(input)
-    input = fix_encoding(input)
-    quick_isa_check(input)
+    @input = input
     @separators = detect_separators(input)
     @envelopes = build_tree(split_segments(input, separators))
     @envelopes.each { |e| Baldr::Validator.validate! e }
@@ -23,36 +22,51 @@ class Baldr::Parser
 
   protected
 
-  def quick_isa_check(input)
-    raise "doesn't begin with ISA..." unless input.start_with?('ISA')
-  end
-
-  def fix_encoding(input)
-    input.encode('UTF-16', 'UTF-8', invalid: :replace, replace: '~').encode('UTF-8', 'UTF-16')
-  end
-
   def detect_separators(input)
-    e = input[3]
-    ee = Regexp.quote(e)
+    io = StringIO.new(input)
 
-    regexp = /\AISA(#{ee}[^#{e}]+){15}#{ee}(.)(\W*)[A-Z][A-Z0-9]{1,2}/
+    isa = io.gets(3)
+    raise Baldr::ParseError, "doesn't begin with ISA..." unless isa == 'ISA'
 
-    raise 'segment separator could not be found' if input !~ regexp
+    element = io.getbyte
+
+    15.times { io.bytes { |b| break if b == element } }
+    component = io.getbyte
+
+    segment = []
+    io.bytes do |b|
+      break if b.chr =~ /[A-Z]/
+      segment << b
+    end
 
     {
-      element: e,
-      segment: $3,
-      component: $2
+      element: element.chr,
+      segment: segment,
+      component: component.chr
     }
   end
 
   def split_segments(input, separators)
-    s = Regexp.quote(separators[:segment])
-    if input =~ /#{s}\s*\z/
-      input.split(separators[:segment]).map{ |s| s.split(separators[:element]) }
-    else
-      raise 'there are wrong characters in the end of the interchange'
+    segments = []
+    buffer = []
+    skip = 0
+
+    io = StringIO.new(input)
+    io.bytes do |b|
+      if skip > 0
+        skip -= 1
+      else
+        if b == separators[:segment].first
+          segments << buffer.pack('c*').split(separators[:element])
+          skip = separators[:segment].length - 1
+          buffer = []
+        else
+          buffer << b
+        end
+      end
     end
+
+    segments
   end
 
   def build_tree(source)
