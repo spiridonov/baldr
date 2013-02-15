@@ -17,6 +17,7 @@ describe Baldr::Parser do
     e.receiver_id.should eq 'ODFL'
 
     t['ST01'].should eq '204'
+    t.transaction_set_code.should eq '204'
     t['B204'].should eq '04000000000000060'
     t['S5'].each.with_index do |s, i|
       s['S501'].to_i.should eq i+1

@@ -3,7 +3,14 @@ require 'spec_helper'
 describe Baldr::Builder do
 
   it 'should do smth' do
-    b = Baldr::Builder.new
+    b = Baldr::Builder.new(
+      #standard_version_number: '',
+      sender_id_qualifier: '4233372493',
+      sender_id: 'ZZ',
+      receiver_id_qualifier: '02',
+      receiver_id: 'ODFL',
+    )
+
     b.ST do
       ST01 '997'
       ST02 '000000079'
@@ -37,8 +44,8 @@ describe Baldr::Builder do
       end
     end
 
+    b.prepare!
     #Baldr::Validator.validate! b.
-    #b.
   end
 
 end

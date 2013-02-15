@@ -21,17 +21,32 @@ class Baldr::Envelope < Baldr::Segment
 
   def initialize(id = 'ISA')
     super(id)
+
+    self.authorization_info_qualifier = '00'
+    self.authorization_info = ''
+    self.security_info_qualifier = '00'
+    self.security_info = ''
+    self.sender_id_qualifier = '00'
+    self.sender_id = ''
+    self.receiver_id_qualifier = '00'
+    self.receiver_id = ''
+    self.datetime = DateTime.now
+    self.standard_id = 'U'
+    self.standard_version_number = '00401'
+    self.acknowledgment_requested = '0'
+    self.usage_indicator = 'P'
+    self.component_separator = '>'
   end
 
   def prepare!
-
+    interchange_control_number
   end
 
   def transactions
     @transactions ||= func_group_loop.segments.map{ |f| f.transactions }.flatten
   end
 
-  def gs(&block)
+  def GS(&block)
     if @children.last && @children.last.id.to_s == 'GS'
       loop = @children.last
       loop.add_segment Baldr::FunctionalGroup.new
@@ -73,6 +88,15 @@ class Baldr::Envelope < Baldr::Segment
 
   def receiver_id=(value)
     self['ISA08'] = value.to_s.ljust(record_def[7][:max])
+  end
+
+  def datetime
+    DateTime.parse "#{date} #{time}"
+  end
+
+  def datetime=(value)
+    self.date = value.strftime('%y%m%d')
+    self.time = value.strftime('%H%M')
   end
 
   def custom_validate!(version)

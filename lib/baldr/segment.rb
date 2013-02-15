@@ -75,18 +75,25 @@ class Baldr::Segment
       element = m[-2..-1].to_i - 1
       @elements[element] = args[0]
     elsif m =~ /^[A-Z][A-Z0-9]{1,2}$/
-      if @children.last && @children.last.id.to_s == m
-        loop = @children.last
-      else
-        loop = Baldr::Loop.new(m)
-        @children << loop
-      end
-
       segment = Baldr::Segment.new(m)
       segment.instance_eval &block if block_given?
-      loop.add segment
+      get_loop(m).add segment
     else
       super
+    end
+  end
+
+  def add(segment)
+    get_loop(segment.id).add segment
+  end
+
+  def get_loop(loop_id)
+    if @children.last && @children.last.id.to_s == loop_id
+      @children.last
+    else
+      loop = Baldr::Loop.new(loop_id)
+      @children << loop
+      loop
     end
   end
 

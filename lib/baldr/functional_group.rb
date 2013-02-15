@@ -28,7 +28,12 @@ class Baldr::FunctionalGroup < Baldr::Segment
   end
 
   def datetime
+    DateTime.parse "#{date} #{time}"
+  end
 
+  def datetime=(value)
+    self.date = value.strftime('%Y%m%d')
+    self.time = value.strftime('%H%M')
   end
 
   def custom_validate!(version)
