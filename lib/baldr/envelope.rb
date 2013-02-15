@@ -47,16 +47,32 @@ class Baldr::Envelope < Baldr::Segment
     self['ISA02'].rstrip
   end
 
+  def authorization_info=(value)
+    self['ISA02'] = value.to_s.ljust(record_def[1][:max])
+  end
+
   def security_info
     self['ISA04'].rstrip
+  end
+
+  def security_info=(value)
+    self['ISA04'] = value.to_s.ljust(record_def[3][:max])
   end
 
   def sender_id
     self['ISA06'].rstrip
   end
 
+  def sender_id=(value)
+    self['ISA06'] = value.to_s.ljust(record_def[5][:max])
+  end
+
   def receiver_id
     self['ISA08'].rstrip
+  end
+
+  def receiver_id=(value)
+    self['ISA08'] = value.to_s.ljust(record_def[7][:max])
   end
 
   def custom_validate!(version)
@@ -75,9 +91,8 @@ class Baldr::Envelope < Baldr::Segment
     @func_group_loop ||= @children.select{ |c| c.id == 'GS' }.first
   end
 
-  #def safe_element_accessor(element, value)
-  #  #value =
-  #  self.send(element, value)
-  #end
+  def record_def
+    Baldr::Grammar::Envelope::RECORD_DEFS['ISA']
+  end
 
 end
