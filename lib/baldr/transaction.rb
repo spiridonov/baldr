@@ -10,7 +10,12 @@ class Baldr::Transaction < Baldr::Segment
   end
 
   def prepare!
+    trailer = get_trailer('SE')
 
+    trailer['SE01'] = number_of_segments.to_s
+
+    self.transaction_control_number ||= generate_control_number(9)
+    trailer['SE02'] = transaction_control_number
   end
 
   def sub_grammar(version)

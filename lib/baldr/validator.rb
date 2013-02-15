@@ -33,7 +33,7 @@ module Baldr::Validator
 
         l += 1
       else
-        raise Baldr::Error, "segment #{g[:id]} is required" if g[:min] > 0
+        raise Baldr::Error, "segment #{g[:id]} is required, but #{loop.id} was found" if g[:min] > 0
       end
     end
 

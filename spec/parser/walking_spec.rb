@@ -22,6 +22,11 @@ describe Baldr::Parser do
     t['S5'].each.with_index do |s, i|
       s['S501'].to_i.should eq i+1
     end
+
+    names = t['S5'].map do |s|
+      s['N101']
+    end
+    names.should eq ['SH', 'CN']
   end
 
 end

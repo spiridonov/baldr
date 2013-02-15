@@ -30,7 +30,7 @@ class Baldr::Envelope < Baldr::Segment
     self.sender_id = ''
     self.receiver_id_qualifier = '00'
     self.receiver_id = ''
-    self.datetime = DateTime.now
+    self.date_time = DateTime.now
     self.standard_id = 'U'
     self.standard_version_number = '00401'
     self.acknowledgment_requested = '0'
@@ -39,7 +39,12 @@ class Baldr::Envelope < Baldr::Segment
   end
 
   def prepare!
-    interchange_control_number
+    trailer = get_trailer('IEA')
+
+    trailer['IEA01'] = func_group_loop.segments.count.to_s
+
+    self.interchange_control_number ||= generate_control_number(9)
+    trailer['IEA02'] = interchange_control_number
   end
 
   def transactions
@@ -90,11 +95,11 @@ class Baldr::Envelope < Baldr::Segment
     self['ISA08'] = value.to_s.ljust(record_def[7][:max])
   end
 
-  def datetime
+  def date_time
     DateTime.parse "#{date} #{time}"
   end
 
-  def datetime=(value)
+  def date_time=(value)
     self.date = value.strftime('%y%m%d')
     self.time = value.strftime('%H%M')
   end

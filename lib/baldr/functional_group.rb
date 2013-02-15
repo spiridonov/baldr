@@ -13,10 +13,21 @@ class Baldr::FunctionalGroup < Baldr::Segment
 
   def initialize(id = 'GS')
     super(id)
+
+    #self.application_senders_code = ''
+    #self.application_receivers_code = ''
+    self.date_time = DateTime.now
+    self.responsible_agency_code = 'X'
+    self.version_release_industry_code = '004010'
   end
 
   def prepare!
+    trailer = get_trailer('GE')
 
+    trailer['GE01'] = transaction_loop.segments.count.to_s
+
+    self.group_control_number ||= generate_control_number(9)
+    trailer['GE02'] = group_control_number
   end
 
   def sub_version
@@ -27,11 +38,11 @@ class Baldr::FunctionalGroup < Baldr::Segment
     transaction_loop.segments
   end
 
-  def datetime
+  def date_time
     DateTime.parse "#{date} #{time}"
   end
 
-  def datetime=(value)
+  def date_time=(value)
     self.date = value.strftime('%Y%m%d')
     self.time = value.strftime('%H%M')
   end

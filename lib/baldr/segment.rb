@@ -83,20 +83,6 @@ class Baldr::Segment
     end
   end
 
-  def add(segment)
-    get_loop(segment.id).add segment
-  end
-
-  def get_loop(loop_id)
-    if @children.last && @children.last.id.to_s == loop_id
-      @children.last
-    else
-      loop = Baldr::Loop.new(loop_id)
-      @children << loop
-      loop
-    end
-  end
-
   def sub_version
 
   end
@@ -115,6 +101,36 @@ class Baldr::Segment
 
   def number_of_segments
     1 + @children.map(&:number_of_segments).sum
+  end
+
+  def add(segment)
+    get_loop(segment.id).add segment
+  end
+
+  protected
+
+  def generate_control_number(digits)
+    "%0#{digits}d" % Random.rand(10 ** (digits + 1))
+  end
+
+  def get_trailer(trailer_id)
+    if @children.last && @children.last.segments.first.id == trailer_id
+      trailer = @children.last.segments.first
+    else
+      trailer = Baldr::Segment.new(trailer_id)
+      add trailer
+    end
+    trailer
+  end
+
+  def get_loop(loop_id)
+    if @children.last && @children.last.id.to_s == loop_id
+      @children.last
+    else
+      loop = Baldr::Loop.new(loop_id)
+      @children << loop
+      loop
+    end
   end
 
 end
