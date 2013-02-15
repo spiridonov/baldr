@@ -10,23 +10,23 @@ class Baldr::Parser
     @error.nil?
   end
 
+  protected
+
   def parse(input)
     @input = input
     @separators = detect_separators(input)
     @envelopes = build_tree(split_segments(input, separators))
     @envelopes.each { |e| Baldr::Validator.validate! e }
     self
-  rescue Baldr::ParseError => e
+  rescue Baldr::Error => e
     @error = e.message
   end
-
-  protected
 
   def detect_separators(input)
     io = StringIO.new(input)
 
     isa = io.gets(3)
-    raise Baldr::ParseError, "doesn't begin with ISA..." unless isa == 'ISA'
+    raise Baldr::Error, "doesn't begin with ISA..." unless isa == 'ISA'
 
     element = io.getbyte
 
@@ -66,14 +66,14 @@ class Baldr::Parser
       end
     end
 
+    raise Baldr::Error, 'invalid characters in the end of interchange' if skip > 0
+
     segments
   end
 
   def build_tree(source)
-    isa = source.first
-    version = Baldr::Grammar.for_version(isa[12])
-    grammar = version::Envelope::STRUCTURE
-    loop = build_segment(source.to_enum, grammar, version)
+    grammar = Baldr::Grammar::Envelope::STRUCTURE
+    loop = build_segment(source.to_enum, grammar, nil)
     loop.segments
   end
 
@@ -88,6 +88,7 @@ class Baldr::Parser
 
       enumerator.next
 
+      version ||= segment.sub_version
       sub_grammar = segment.sub_grammar(version) || grammar
       sub_grammar.fetch(:level, []).each do |g|
         child = build_segment(enumerator, g, version)
