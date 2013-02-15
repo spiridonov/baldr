@@ -1,5 +1,24 @@
 class Baldr::Envelope < Baldr::Segment
 
+  helpers_for_elements(
+    'ISA01' => :authorization_info_qualifier,
+    #'ISA02' => :authorization_info,
+    'ISA03' => :security_info_qualifier,
+    #'ISA04' => :security_info,
+    'ISA05' => :sender_id_qualifier,
+    #'ISA06' => :sender_id,
+    'ISA07' => :receiver_id_qualifier,
+    #'ISA08' => :receiver_id,
+    'ISA09' => :date,
+    'ISA10' => :time,
+    'ISA11' => :standard_id,
+    'ISA12' => :standard_version_number,
+    'ISA13' => :interchange_control_number,
+    'ISA14' => :acknowledgment_requested,
+    'ISA15' => :usage_indicator,
+    'ISA16' => :component_separator,
+  )
+
   def initialize(id = 'ISA')
     super(id)
   end
@@ -24,28 +43,20 @@ class Baldr::Envelope < Baldr::Segment
     loop.current_segment.instance_eval &block if block_given?
   end
 
+  def authorization_info
+    self['ISA02'].rstrip
+  end
+
+  def security_info
+    self['ISA04'].rstrip
+  end
+
   def sender_id
-    self['ISA06']
+    self['ISA06'].rstrip
   end
 
   def receiver_id
-    self['ISA08']
-  end
-
-  def sender_id_qualifier
-    self['ISA05']
-  end
-
-  def receiver_id_qualifier
-    self['ISA07']
-  end
-
-  def standard_version_number
-    self['ISA12']
-  end
-
-  def interchange_control_number
-    self['ISA13']
+    self['ISA08'].rstrip
   end
 
   def custom_validate!(version)

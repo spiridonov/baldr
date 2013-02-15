@@ -1,19 +1,16 @@
 class Baldr::Transaction < Baldr::Segment
 
+  helpers_for_elements(
+    'ST01' => :transaction_set_code,
+    'ST02' => :transaction_control_number,
+  )
+
   def initialize(id = 'ST')
     super(id)
   end
 
   def prepare!
 
-  end
-
-  def transaction_control_number
-    self['ST02']
-  end
-
-  def transaction_set_code
-    self['ST01']
   end
 
   def sub_grammar(version)

@@ -11,9 +11,10 @@ describe Baldr::Parser do
     e = parser.envelopes.first
     t = e.transactions.first
 
-    e.sender_id.should eq '4233372493     '
+    e['ISA06'].should eq '4233372493     '
+    e.sender_id.should eq '4233372493'
     e['IEA02'].should eq '000000002'
-    e['ISA08'].should eq 'ODFL           '
+    e.receiver_id.should eq 'ODFL'
 
     t['ST01'].should eq '204'
     t['B204'].should eq '04000000000000060'
