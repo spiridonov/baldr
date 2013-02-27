@@ -8,7 +8,7 @@ describe Baldr::Parser do
         input = File.read(file)
         parser = Baldr::Parser.new(input)
         parser.error.should be_nil
-        output = parser.envelopes.map { |e| Baldr::Renderer::X12.draw(e, {separators: parser.separators}) }.join
+        output = Baldr::Renderer::X12.draw(parser.envelopes, {separators: parser.separators})
         output.bytes.to_a.should eq input.bytes.to_a
       end
     end

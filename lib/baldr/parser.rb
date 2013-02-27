@@ -10,6 +10,10 @@ class Baldr::Parser
     @error.nil?
   end
 
+  def transactions
+    envelopes.map(&:transactions).flatten
+  end
+
   protected
 
   def parse(input)

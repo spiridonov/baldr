@@ -8,10 +8,11 @@ module Baldr::Renderer::X12
     component: '>',
   }.freeze
 
-  def draw(segment, params = {})
+  def draw(segments, params = {})
+    segments = Array.wrap(segments)
     separators = params[:separators] || DEFAULT_SEPARATORS
     separators[:segment] = separators[:segment].pack('c*') if separators[:segment].is_a?(Array)
-    draw_segment(segment, separators).join
+    segments.map{ |s| draw_segment(s, separators).join }.join
   end
 
   def draw_segment(segment, separators)

@@ -11,9 +11,12 @@ require 'baldr/validator'
 
 require 'baldr/error'
 
+require 'baldr/utils'
+
 require 'baldr/renderer'
 require 'baldr/renderer/x12'
-require 'baldr/renderer/json'
+require 'baldr/renderer/edi_like_json'
+require 'baldr/renderer/compact_json'
 
 require 'baldr/grammar'
 require 'baldr/grammar/envelope'

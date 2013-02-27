@@ -48,7 +48,7 @@ class Baldr::Envelope < Baldr::Segment
   end
 
   def transactions
-    @transactions ||= func_group_loop.segments.map{ |f| f.transactions }.flatten
+    @transactions ||= func_group_loop.segments.map(&:transactions).flatten
   end
 
   def GS(&block)
