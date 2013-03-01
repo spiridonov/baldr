@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Baldr::Builder do
 
-  it 'should build the same EDI as spec/support/parsing/valid/204/1.EDI' do
-    file = 'spec/support/parsing/valid/204/1.EDI'
+  it 'should build the same EDI as spec/support/edi_files/valid/204/1.EDI' do
+    file = 'spec/support/edi_files/valid/204/1.EDI'
     input = File.read(file)
 
     b = Baldr::Builder.new(
@@ -161,7 +161,7 @@ describe Baldr::Builder do
     end
 
     b.prepare!
-    Baldr::Validator.validate! b.envelope
+    Baldr::Validator.validate!(b.envelope)
 
     separators = {
       component: '>',

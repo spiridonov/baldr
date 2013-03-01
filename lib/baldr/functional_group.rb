@@ -31,7 +31,7 @@ class Baldr::FunctionalGroup < Baldr::Segment
   end
 
   def sub_version
-    Baldr::Grammar.for_version(version_release_industry_code)
+    Baldr::Grammar.for_standard_version(version_release_industry_code)
   end
 
   def transactions
@@ -46,24 +46,6 @@ class Baldr::FunctionalGroup < Baldr::Segment
     self.date = value.strftime('%Y%m%d')
     self.time = value.strftime('%H%M')
   end
-
-  def custom_validate!(version)
-    transaction_loop.segments.each do |transaction|
-      if version.for_transaction_set(transaction.transaction_set_code)::FUNCTIONAL_GROUP != functional_identifier_code
-        raise "wrong transaction #{transaction.transaction_set_code} in functional group #{functional_identifier_code}"
-      end
-    end
-
-    trailer = @children.second.segments.first
-    if trailer['GE01'].to_i != transaction_loop.segments.count
-      raise "wrong transactions number: #{trailer['GE01']} in GE01, but real number is #{transaction_loop.segments.count}"
-    end
-    if trailer['GE02'] != group_control_number
-      raise "group control numbers don't match: #{trailer['GE02']} in GE02 and #{group_control_number} in GS06"
-    end
-  end
-
-  protected
 
   def transaction_loop
     @children.first

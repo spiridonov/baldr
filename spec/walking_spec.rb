@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Baldr::Parser do
 
   it 'should walk through parsed file' do
-    file = 'spec/support/parsing/valid/204/1.EDI'
+    file = 'spec/support/edi_files/valid/204/1.EDI'
     input = File.read(file)
     parser = Baldr::Parser.new(input)
     parser.error.should be_nil

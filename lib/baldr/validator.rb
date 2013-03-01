@@ -2,15 +2,15 @@ module Baldr::Validator
 
   extend self
 
-  def validate!(envelope)
-    grammar = Baldr::Grammar::Envelope::STRUCTURE
-    record_defs = Baldr::Grammar::Envelope::RECORD_DEFS
-    validate_tree!(envelope, grammar, record_defs, nil)
+  def validate!(envelope, grammar = nil, version = nil)
+    grammar ||= Baldr::Grammar::Envelope
+    validate_tree!(envelope, grammar, grammar.structure, version)
   end
 
   protected
 
-  def validate_tree!(segment, grammar, record_defs, version)
+  def validate_tree!(segment, grammar, structure, version)
+    record_defs = grammar.record_defs
     raise Baldr::Error, "unknown segment #{segment.id}" unless record_defs[segment.id]
 
     record_defs[segment.id].each.with_index do |r, i|
@@ -20,24 +20,29 @@ module Baldr::Validator
     end
 
     version ||= segment.sub_version
-    record_defs = version::RECORD_DEFS if version
-    sub_grammar = segment.sub_grammar(version) || grammar
+    sub_grammar = segment.sub_grammar(version)
+    structure = sub_grammar.structure if sub_grammar
 
     l = 0
-    sub_grammar.fetch(:level, []).each do |g|
+    structure.fetch(:level, []).each do |s|
       loop = segment.children[l]
-      if loop && loop.id.to_s == g[:id]
-        check_loop_count(loop, g)
+      if loop && loop.id.to_s == s[:id]
+        check_loop_count(loop, s)
 
-        loop.segments.each { |child| validate_tree!(child, g, record_defs, version) }
+        loop.segments.each { |child| validate_tree!(child, sub_grammar || grammar, s, version) }
 
         l += 1
+      elsif loop
+        raise Baldr::Error, "segment #{s[:id]} is required, but #{loop.id} was found" if s[:min] > 0
       else
-        raise Baldr::Error, "segment #{g[:id]} is required, but #{loop.id} was found" if g[:min] > 0
+        raise Baldr::Error, "segment #{s[:id]} is required, but nothing was found" if s[:min] > 0
       end
     end
 
-    segment.custom_validate!(version)
+    method = "validate_#{segment.id.downcase}!"
+    if grammar.respond_to?(method)
+      grammar.send(method, segment)
+    end
   end
 
   def check_loop_count(loop, grammar)

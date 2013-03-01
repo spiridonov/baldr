@@ -1,5 +1,52 @@
 module Baldr::Grammar::Envelope
 
+  extend self
+
+  def structure
+    STRUCTURE
+  end
+
+  def record_defs
+    RECORD_DEFS
+  end
+
+  def validate_st!(segment)
+    trailer = segment.children.last.segments.first
+    total_number = segment.number_of_segments
+    if trailer['SE01'].to_i != total_number
+      raise Baldr::Error, "wrong segments number: #{trailer['SE01']} in SE01, but real number is #{total_number}"
+    end
+    if trailer['SE02'] != segment.transaction_control_number
+      raise Baldr::Error, "transaction set control numbers don't match: #{trailer['SE02']} in SE02 and #{segment.transaction_control_number} in ST02"
+    end
+  end
+
+  def validate_gs!(segment)
+    #segment.transaction_loop.segments.each do |transaction|
+    #  if version.for_transaction_set(transaction.transaction_set_code)::FUNCTIONAL_GROUP != segment.functional_identifier_code
+    #    raise Baldr::Error, "wrong transaction #{transaction.transaction_set_code} in functional group #{segment.functional_identifier_code}"
+    #  end
+    #end
+
+    trailer = segment.children.second.segments.first
+    if trailer['GE01'].to_i != segment.transaction_loop.segments.count
+      raise Baldr::Error, "wrong transactions number: #{trailer['GE01']} in GE01, but real number is #{segment.transaction_loop.segments.count}"
+    end
+    if trailer['GE02'] != segment.group_control_number
+      raise Baldr::Error, "group control numbers don't match: #{trailer['GE02']} in GE02 and #{segment.group_control_number} in GS06"
+    end
+  end
+
+  def validate_isa!(segment)
+    trailer = segment.children.last.segments.first
+    if trailer['IEA01'].to_i != segment.func_group_loop.segments.count
+      raise "wrong functional groups number: #{trailer['IEA01']} in IEA01, but real number is #{segment.func_group_loop.segments.count}"
+    end
+    if trailer['IEA02'] != segment.interchange_control_number
+      raise "interchange control numbers don't match: #{trailer['IEA02']} in IEA02 and #{segment.interchange_control_number} in ISA13"
+    end
+  end
+
   STRUCTURE = {
     id: 'ISA', min: 0, max: 99999, class: :envelope, level: [
       {id: 'TA1', min: 0, max: 99999},
@@ -40,18 +87,13 @@ module Baldr::Grammar::Envelope
       {id: 'GS07', required: true, max: 2, type: :id},
       {id: 'GS08', required: true, max: 12, type: :string},
     ],
-    'ST' => [
-      {id: 'ST01', required: true, max: 3, type: :id},
-      {id: 'ST02', required: true, min: 4, max: 9, type: :string},
-      {id: 'ST03', required: false, max: 35, type: :string},
-    ],
-    'SE' => [
-      {id: 'SE01', required: true, max: 10, type: :number, decimals: 0},
-      {id: 'SE02', required: true, min: 4, max: 9, type: :string},
-    ],
     'GE' => [
       {id: 'GE01', required: true, max: 6, type: :number, decimals: 0},
       {id: 'GE02', required: true, max: 9, type: :number, decimals: 0},
+    ],
+    'ST' => [
+      {id: 'ST01', required: true, max: 3, type: :id},
+      {id: 'ST02', required: true, min: 4, max: 9, type: :string},
     ],
     'IEA' => [
       {id: 'IEA01', required: true, max: 5, type: :number, decimals: 0},

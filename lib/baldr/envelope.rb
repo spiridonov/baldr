@@ -104,18 +104,6 @@ class Baldr::Envelope < Baldr::Segment
     self.time = value.strftime('%H%M')
   end
 
-  def custom_validate!(version)
-    trailer = @children.last.segments.first
-    if trailer['IEA01'].to_i != func_group_loop.segments.count
-      raise "wrong functional groups number: #{trailer['IEA01']} in IEA01, but real number is #{func_group_loop.segments.count}"
-    end
-    if trailer['IEA02'] != interchange_control_number
-      raise "interchange control numbers don't match: #{trailer['IEA02']} in IEA02 and #{interchange_control_number} in ISA13"
-    end
-  end
-
-  protected
-
   def func_group_loop
     @func_group_loop ||= @children.select{ |c| c.id == 'GS' }.first
   end

@@ -1,5 +1,15 @@
 module Baldr::Grammar::Version4010::Set997
 
+  extend self
+
+  def structure
+    STRUCTURE
+  end
+
+  def record_defs
+    Baldr::Grammar::Version4010::RECORD_DEFS
+  end
+
   FUNCTIONAL_GROUP = 'FA'
 
   STRUCTURE = {

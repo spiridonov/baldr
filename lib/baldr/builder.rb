@@ -56,7 +56,7 @@ class Baldr::Builder
   protected
 
   def version
-    @version ||= Baldr::Grammar.for_version(@standard_version_number)
+    @version ||= Baldr::Grammar.for_standard_version(@standard_version_number)
   end
 
 end

@@ -20,6 +20,7 @@ require 'baldr/renderer/compact_json'
 
 require 'baldr/grammar'
 require 'baldr/grammar/envelope'
+require 'baldr/grammar/transaction'
 require 'baldr/grammar/version4010'
 require 'baldr/grammar/version4010/set204'
 require 'baldr/grammar/version4010/set210'

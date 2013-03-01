@@ -95,10 +95,6 @@ class Baldr::Segment
 
   end
 
-  def custom_validate!(version)
-
-  end
-
   def number_of_segments
     1 + @children.map(&:number_of_segments).sum
   end
