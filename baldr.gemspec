@@ -7,7 +7,7 @@ require 'baldr/version'
 Gem::Specification.new do |gem|
   gem.name          = 'baldr'
   gem.version       = Baldr::VERSION
-  gem.date          = '2013-03-01'
+  gem.date          = '2013-03-20'
   gem.summary       = "Baldr, Odin`s son"
   gem.description   = "Lightweight EDI X12 translator"
   gem.authors       = ["Stanislav Spiridonov"]
