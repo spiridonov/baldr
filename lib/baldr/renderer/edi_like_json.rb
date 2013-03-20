@@ -9,7 +9,7 @@ module Baldr::Renderer::EdiLikeJson
 
   def draw_segment(segment)
     node = ActiveSupport::OrderedHash.new
-    segment.elements.each.with_index { |e, i| node["#{segment.id}#{'%02d' % i}"] = e if e.present? }
+    segment.elements.each.with_index { |e, i| node["#{segment.id}#{'%02d' % (i + 1)}"] = e if e.present? }
     segment.children.each { |loop| node[loop.id] = loop.segments.map { |s| draw_segment(s) } }
     node
   end
