@@ -25,20 +25,20 @@ describe Baldr::Builder do
       ST01 '204'
       ST02 '000000006'
 
-      B2 do
-        B202 'ODFL'
-        B204 '04000000000000060'
-        B206 'PP'
+      B2 do |n|
+        n.B202 'ODFL'
+        n.B204 '04000000000000060'
+        n.B206 'PP'
       end
 
-      B2A do
-        B2A01 '00'
-        B2A02 'ZZ'
+      B2A do |n|
+        n.B2A01 '00'
+        n.B2A02 'ZZ'
       end
 
-      G62 do
-        G6201 '64'
-        G6202 '20121109'
+      G62 do |n|
+        n.G6201 '64'
+        n.G6202 '20121109'
       end
 
       N1 do
@@ -150,14 +150,13 @@ describe Baldr::Builder do
         end
       end
 
-      L3 do
-        L301 '145'
-        L302 'G'
-        L309 '0'
-        L310 'E'
-        L311 '8'
-        L312 'L'
-      end
+      l3 = create(:L3)
+      l3.L301 '145'
+      l3.L302 'G'
+      l3.L309 '0'
+      l3.L310 'E'
+      l3.L311 '8'
+      l3.L312 'L'
     end
 
     b.prepare!

@@ -76,10 +76,24 @@ class Baldr::Segment
       @elements[element] = args[0]
     elsif m =~ /^[A-Z][A-Z0-9]{1,2}$/
       segment = Baldr::Segment.new(m)
-      segment.instance_eval &block if block_given?
       get_loop(m).add segment
+      if block_given?
+        if block.arity == 0
+          segment.instance_eval &block
+        else
+          yield(segment)
+        end
+      end
     else
       super
+    end
+  end
+
+  def create(id)
+    if id =~ /^[A-Z][A-Z0-9]{1,2}$/
+      segment = Baldr::Segment.new(id)
+      get_loop(id).add segment
+      segment
     end
   end
 
