@@ -81,7 +81,7 @@ class Baldr::Segment
         if block.arity == 0
           segment.instance_eval &block
         else
-          yield(segment)
+          block.call(segment)
         end
       end
     else

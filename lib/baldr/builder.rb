@@ -20,7 +20,13 @@ class Baldr::Builder
     transaction = Baldr::Transaction.new
     @transactions << transaction
 
-    transaction.instance_eval &block if block_given?
+    if block_given?
+      if block.arity == 0
+        transaction.instance_eval &block
+      else
+        block.call(transaction)
+      end
+    end
   end
 
   def prepare!

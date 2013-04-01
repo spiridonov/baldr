@@ -1,70 +1,31 @@
 require 'spec_helper'
 
-describe Baldr::Builder do
+class TestBuilderFromRealLife
 
-  it 'should build the same EDI as spec/support/edi_files/valid/204/1.EDI' do
-    file = 'spec/support/edi_files/valid/204/1.EDI'
-    input = File.read(file)
+  def build(builder)
+    builder.ST do |st|
+      st.ST01 '204'
+      st.ST02 '000000006'
 
-    b = Baldr::Builder.new(
-      #standard_version_number: '',
-      sender_id: '4233372493',
-      sender_id_qualifier: 'ZZ',
-      receiver_id_qualifier: '02',
-      receiver_id: 'ODFL',
-      date_time: DateTime.parse('121109 1642'),
-      interchange_control_number: '000000002',
-      usage_indicator: 'P',
-      acknowledgment_requested: '1',
-      functional_groups_control_numbers: {
-        'SM' => '2'
-      }
-    )
-
-    b.ST do
-      ST01 '204'
-      ST02 '000000006'
-
-      B2 do |n|
+      st.B2 do |n|
         n.B202 'ODFL'
         n.B204 '04000000000000060'
         n.B206 'PP'
       end
 
-      B2A do |n|
+      st.B2A do |n|
         n.B2A01 '00'
         n.B2A02 'ZZ'
       end
 
-      G62 do |n|
+      st.G62 do |n|
         n.G6201 '64'
         n.G6202 '20121109'
       end
 
-      N1 do
-        N101 'BT'
-        N102 'AEROFLEX USA'
+      segment_n1(st)
 
-        N3 do
-          N301 '282 Industrial Park Road'
-        end
-
-        N4 do
-          N401 'Sweetwater'
-          N402 'TN'
-          N403 '37874'
-          N404 'US'
-        end
-
-        G61 do
-          G6101 'IC'
-          G6102 'Local Telephone'
-          G6103 'TE'
-          G6104 '4233372493'
-        end
-      end
-
-      S5 do
+      st.S5 do
         S501 '1'
         S502 'CL'
 
@@ -110,7 +71,7 @@ describe Baldr::Builder do
         end
       end
 
-      S5 do
+      st.S5 do
         S501 '2'
         S502 'CU'
 
@@ -150,14 +111,65 @@ describe Baldr::Builder do
         end
       end
 
-      l3 = create(:L3)
-      l3.L301 '145'
-      l3.L302 'G'
-      l3.L309 '0'
-      l3.L310 'E'
-      l3.L311 '8'
-      l3.L312 'L'
+      st.L3 do
+        L301 '145'
+        L302 'G'
+        L309 '0'
+        L310 'E'
+        L311 '8'
+        L312 'L'
+      end
     end
+  end
+
+  def segment_n1(parent)
+    parent.N1 do
+      N101 'BT'
+      N102 'AEROFLEX USA'
+
+      N3 do
+        N301 '282 Industrial Park Road'
+      end
+
+      n4 = create(:N4)
+      n4.N401 'Sweetwater'
+      n4.N402 'TN'
+      n4.N403 '37874'
+      n4.N404 'US'
+
+      G61 do
+        G6101 'IC'
+        G6102 'Local Telephone'
+        G6103 'TE'
+        G6104 '4233372493'
+      end
+    end
+  end
+
+end
+
+describe Baldr::Builder do
+
+  it 'should build the same EDI as spec/support/edi_files/valid/204/1.EDI' do
+    file = 'spec/support/edi_files/valid/204/1.EDI'
+    input = File.read(file)
+
+    b = Baldr::Builder.new(
+      #standard_version_number: '',
+      sender_id: '4233372493',
+      sender_id_qualifier: 'ZZ',
+      receiver_id_qualifier: '02',
+      receiver_id: 'ODFL',
+      date_time: DateTime.parse('121109 1642'),
+      interchange_control_number: '000000002',
+      usage_indicator: 'P',
+      acknowledgment_requested: '1',
+      functional_groups_control_numbers: {
+        'SM' => '2'
+      }
+    )
+
+    TestBuilderFromRealLife.new.build(b)
 
     b.prepare!
     Baldr::Validator.validate!(b.envelope)
