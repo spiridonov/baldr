@@ -19,6 +19,10 @@ class Baldr::Envelope < Baldr::Segment
     'ISA16' => :component_separator,
   )
 
+  def self.helpers
+    @helpers + [:receiver_id, :sender_id, :security_info, :authorization_info, :date_time]
+  end
+
   def initialize(id = 'ISA')
     super(id)
 

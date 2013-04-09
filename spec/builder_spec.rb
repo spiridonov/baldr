@@ -171,6 +171,7 @@ describe Baldr::Builder do
 
     TestBuilderFromRealLife.new.build(b)
 
+    b.build_functional_groups
     b.prepare!
     Baldr::Validator.validate!(b.envelope)
 

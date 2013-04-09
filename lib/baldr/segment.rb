@@ -3,6 +3,7 @@ class Baldr::Segment
   attr_accessor :id, :children, :elements
 
   def self.helpers_for_elements(hash)
+    @helpers = hash.values
     hash.each do |element, method|
       self.class_eval <<-RUBY
         def #{method}
@@ -14,6 +15,10 @@ class Baldr::Segment
         end
       RUBY
     end
+  end
+
+  def self.helpers
+    @helpers || []
   end
 
   def initialize(id)
