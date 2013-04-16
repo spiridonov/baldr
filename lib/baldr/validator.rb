@@ -11,7 +11,7 @@ module Baldr::Validator
 
   def validate_tree!(segment, grammar, structure, version)
     record_defs = grammar.record_defs
-    raise Baldr::Error, "unknown segment #{segment.id}" unless record_defs[segment.id]
+    raise Baldr::Error::ValidationError, "unknown segment #{segment.id}" unless record_defs[segment.id]
 
     record_defs[segment.id].each.with_index do |r, i|
       element = segment.elements[i]
@@ -33,9 +33,9 @@ module Baldr::Validator
 
         l += 1
       elsif loop
-        raise Baldr::Error, "segment #{s[:id]} is required, but #{loop.id} was found" if s[:min] > 0
+        raise Baldr::Error::ValidationError, "segment #{s[:id]} is required, but #{loop.id} was found" if s[:min] > 0
       else
-        raise Baldr::Error, "segment #{s[:id]} is required, but nothing was found" if s[:min] > 0
+        raise Baldr::Error::ValidationError, "segment #{s[:id]} is required, but nothing was found" if s[:min] > 0
       end
     end
 
@@ -46,13 +46,13 @@ module Baldr::Validator
   end
 
   def check_loop_count(loop, grammar)
-    raise Baldr::Error, "#{loop.id} loop is too long: #{loop.count} segments, maximum #{grammar[:max]}" if loop.count > grammar[:max]
-    raise Baldr::Error, "#{loop.id} loop is too short: #{loop.count} segments, minimum #{grammar[:min]}" if loop.count < grammar[:min]
+    raise Baldr::Error::ValidationError, "#{loop.id} loop is too long: #{loop.count} segments, maximum #{grammar[:max]}" if loop.count > grammar[:max]
+    raise Baldr::Error::ValidationError, "#{loop.id} loop is too short: #{loop.count} segments, minimum #{grammar[:min]}" if loop.count < grammar[:min]
   end
 
   def check_required(r, element)
     if r[:required] && (element.nil? || element.size == 0)
-      raise Baldr::Error, "element #{r[:id]} is required"
+      raise Baldr::Error::ValidationError, "element #{r[:id]} is required"
     end
   end
 
@@ -67,11 +67,11 @@ module Baldr::Validator
 
   def check_max_and_min_for_string(r, element)
     if r[:max] && element.length > r[:max]
-      raise Baldr::Error, "#{r[:id]} is too long: #{element.length} characters, maximum #{r[:max]}"
+      raise Baldr::Error::ValidationError, "#{r[:id]} is too long: #{element.length} characters, maximum #{r[:max]}"
     end
 
     if r[:min] && element.length < r[:min]
-      raise Baldr::Error, "#{r[:id]} is too short: #{element.length} characters, minimum #{r[:min]}"
+      raise Baldr::Error::ValidationError, "#{r[:id]} is too short: #{element.length} characters, minimum #{r[:min]}"
     end
   end
 

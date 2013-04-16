@@ -21,6 +21,12 @@ describe Baldr::Parser do
         parser = Baldr::Parser.new(input)
         parser.error.should_not be_nil
       end
+
+      it 'should be ok because validation is skipped' do
+        input = File.read(file)
+        parser = Baldr::Parser.new(input, skip_validation: true)
+        parser.error.should be_nil
+      end
     end
   end
 

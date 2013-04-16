@@ -10,6 +10,8 @@ require 'baldr/loop'
 require 'baldr/validator'
 
 require 'baldr/error'
+require 'baldr/error/parsing_error'
+require 'baldr/error/validation_error'
 
 require 'baldr/utils'
 
