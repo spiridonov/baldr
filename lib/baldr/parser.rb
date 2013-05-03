@@ -119,11 +119,11 @@ class Baldr::Parser
   end
 
   def build_tree(source, grammar, version = nil)
-    loop = build_segment(source.to_enum, grammar, grammar.structure, version)
+    loop = build_segment(source.to_enum, grammar.structure, version)
     loop.segments
   end
 
-  def build_segment(enumerator, grammar, structure, version)
+  def build_segment(enumerator, structure, version)
     current = enumerator.peek
 
     while structure[:id] == current[0]
@@ -139,12 +139,12 @@ class Baldr::Parser
 
       if sub_grammar
         sub_grammar.structure.fetch(:level, []).each do |s|
-          child = build_segment(enumerator, sub_grammar, s, version)
+          child = build_segment(enumerator, s, version)
           segment.children << child if child
         end
       else
         structure.fetch(:level, []).each do |s|
-          child = build_segment(enumerator, grammar, s, version)
+          child = build_segment(enumerator, s, version)
           segment.children << child if child
         end
       end

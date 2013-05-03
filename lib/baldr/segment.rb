@@ -42,13 +42,13 @@ class Baldr::Segment
         if loop.segments.length == 1
           loop.segments.first[key] = value
         else
-          raise Buldr::Error, 'there are more than 1 segment in loop. you can\'t assign from here' if loop.segments.length > 1
+          raise Baldr::Error, 'there are more than 1 segment in loop. you can\'t assign from here' if loop.segments.length > 1
         end
       else
-        raise Buldr::Error, "segment #{key[0..-3]} not found"
+        raise Baldr::Error, "segment #{key[0..-3]} not found"
       end
     else
-      raise Buldr::Error, "unable to assign #{key}"
+      raise Baldr::Error, "unable to assign #{key}"
     end
   end
 
@@ -63,7 +63,7 @@ class Baldr::Segment
         if loop.segments.length == 1
           loop.segments.first[key]
         else
-          raise Buldr::Error, 'there are more than 1 segment in loop. use it as enum' if loop.segments.length > 1
+          raise Baldr::Error, 'there are more than 1 segment in loop. use it as enum' if loop.segments.length > 1
         end
       end
     elsif key =~ /^[A-z][A-Z0-9]{1,2}$/
