@@ -16,7 +16,7 @@ module Baldr::Renderer::X12
   end
 
   def draw_segment(segment, separators)
-    a = [segment.id] + segment.elements
+    a = [segment.id] + segment.elements.reverse.drop_while{ |i| i.nil? }.reverse
 
     ["#{a.join(separators[:element])}#{separators[:segment]}"] + segment.children.map{ |l| draw_loop(l, separators) }
   end
