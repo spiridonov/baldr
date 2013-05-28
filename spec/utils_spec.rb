@@ -13,7 +13,16 @@ describe Baldr::Utils do
         dump = Baldr::Utils.dump(envelopes1)
 
         envelopes2 = Baldr::Utils.load(dump)
+        envelopes2.each do |envelope|
+          Baldr::Types.convert_after_load!(envelope)
+        end
 
+        envelopes1.each do |envelope|
+          Baldr::Types.convert_before_render!(envelope)
+        end
+        envelopes2.each do |envelope|
+          Baldr::Types.convert_before_render!(envelope)
+        end
         output1 = Baldr::Renderer::X12.draw(envelopes1, {separators: parser.separators})
         output1.bytes.to_a.should eq input.bytes.to_a
 

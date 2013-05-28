@@ -36,6 +36,7 @@ class Baldr::Parser
   def validate
     if @roots
       @roots.each { |e| Baldr::Validator.validate!(e, @grammar, @version) }
+      @roots.each { |e| Baldr::Types.convert_after_parse!(e, @grammar, @version) }
     end
   rescue Baldr::Error => e
     @error = e.message

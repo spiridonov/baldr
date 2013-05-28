@@ -8,6 +8,9 @@ describe Baldr::Parser do
         input = File.read(file)
         parser = Baldr::Parser.new(input)
         parser.error.should be_nil
+        parser.envelopes.each do |envelope|
+          Baldr::Types.convert_before_render!(envelope)
+        end
         output = Baldr::Renderer::X12.draw(parser.envelopes, {separators: parser.separators})
         output.bytes.to_a.should eq input.bytes.to_a
       end
