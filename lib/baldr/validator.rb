@@ -38,6 +38,10 @@ module Baldr::Validator
         raise Baldr::Error::ValidationError, "segment #{s[:id]} is required, but nothing was found" if s[:min] > 0
       end
     end
+    if l < segment.children.size
+      loop = segment.children[l]
+      raise Baldr::Error::ValidationError, "spare segments #{loop.id}"
+    end
 
     method = "validate_#{segment.id.downcase}!"
     if grammar.respond_to?(method)
