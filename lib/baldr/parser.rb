@@ -78,11 +78,11 @@ class Baldr::Parser
     io.seek(3, IO::SEEK_SET)
     element = io.getbyte
 
-    15.times { io.bytes { |b| break if b == element } }
+    15.times { io.each_byte { |b| break if b == element } }
     component = io.getbyte
 
     segment = []
-    io.bytes do |b|
+    io.each_byte do |b|
       break if b.chr =~ /[A-Z]/
       segment << b
     end
@@ -100,7 +100,7 @@ class Baldr::Parser
     skip = 0
 
     io = StringIO.new(input)
-    io.bytes do |b|
+    io.each_byte do |b|
       if skip > 0
         skip -= 1
       else
