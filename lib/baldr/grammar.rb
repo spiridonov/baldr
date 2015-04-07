@@ -12,7 +12,7 @@ module Baldr::Grammar
         nil
     end
     
-    if !const_name.nil? && self.const_defined?(const_name)
+    if const_name.present? && self.const_defined?(const_name)
       self.const_get(const_name)
     else    
       raise Baldr::Error, "unknown standard version number: #{version}"
