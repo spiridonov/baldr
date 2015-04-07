@@ -1,15 +1,21 @@
 module Baldr::Grammar
 
   def self.for_standard_version(version)
-    case version.length
+    const_name = case version.length
       when 4
-        self.const_get("Version#{version}")
+        "Version#{version}"
       when 5
-        self.const_get("Version#{version[2..4]}0")
+        "Version#{version[2..4]}0"
       when 6
-        self.const_get("Version#{version[2..5]}")
+        "Version#{version[2..5]}"
       else
-        raise "unknown standard version number: #{version}"
+        nil
+    end
+    
+    if !const_name.nil? && self.const_defined?(const_name)
+      self.const_get(const_name)
+    else    
+      raise Baldr::Error, "unknown standard version number: #{version}"
     end
   end
 
