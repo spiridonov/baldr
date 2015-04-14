@@ -1,7 +1,12 @@
 module Baldr::Grammar::Version4010
 
   def self.for_transaction_set(id)
-    self.const_get("Set#{id}")
+    const_name = "Set#{id}"
+    if self.const_defined?(const_name)
+      self.const_get(const_name)
+    else    
+      raise Baldr::Error, "unknown transaction set: #{id}"
+    end
   end
 
   RECORD_DEFS = {
