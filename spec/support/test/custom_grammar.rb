@@ -12,6 +12,12 @@ module Baldr
         RECORD_DEFS
       end
 
+      def sub_grammar(segment)
+        if segment.id == 'ST'
+          for_transaction_set(segment.transaction_set_code)
+        end
+      end
+
       def for_transaction_set(id)
         if self.const_defined?("Set#{id}")
           self.const_get("Set#{id}")

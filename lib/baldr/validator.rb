@@ -2,14 +2,13 @@ module Baldr::Validator
 
   extend self
 
-  def validate!(envelope, grammar = nil, version = nil)
-    grammar ||= Baldr::Grammar::Envelope
-    validate_tree!(envelope, grammar, grammar.structure, version)
+  def validate!(envelope, grammar)
+    validate_tree!(envelope, grammar, grammar.structure)
   end
 
   protected
 
-  def validate_tree!(segment, grammar, structure, version)
+  def validate_tree!(segment, grammar, structure)
     record_defs = grammar.record_defs
     raise Baldr::Error::ValidationError, "unknown segment #{segment.id}" unless record_defs[segment.id]
 
@@ -19,8 +18,7 @@ module Baldr::Validator
       self.send("check_#{r[:type]}", r, element) unless element.nil?
     end
 
-    version ||= segment.sub_version
-    sub_grammar = segment.sub_grammar(version)
+    sub_grammar = grammar.sub_grammar(segment) if grammar.respond_to?(:sub_grammar)
     structure = sub_grammar.structure if sub_grammar
 
     l = 0
@@ -29,7 +27,7 @@ module Baldr::Validator
       if loop && loop.id.to_s == s[:id]
         check_loop_count(loop, s)
 
-        loop.segments.each { |child| validate_tree!(child, sub_grammar || grammar, s, version) }
+        loop.segments.each { |child| validate_tree!(child, sub_grammar || grammar, s) }
 
         l += 1
       elsif loop
@@ -49,9 +47,9 @@ module Baldr::Validator
     end
   end
 
-  def check_loop_count(loop, grammar)
-    raise Baldr::Error::ValidationError, "#{loop.id} loop is too long: #{loop.count} segments, maximum #{grammar[:max]}" if loop.count > grammar[:max]
-    raise Baldr::Error::ValidationError, "#{loop.id} loop is too short: #{loop.count} segments, minimum #{grammar[:min]}" if loop.count < grammar[:min]
+  def check_loop_count(loop, s)
+    raise Baldr::Error::ValidationError, "#{loop.id} loop is too long: #{loop.count} segments, maximum #{s[:max]}" if loop.count > s[:max]
+    raise Baldr::Error::ValidationError, "#{loop.id} loop is too short: #{loop.count} segments, minimum #{s[:min]}" if loop.count < s[:min]
   end
 
   def check_required(r, element)

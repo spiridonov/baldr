@@ -9,7 +9,7 @@ describe Baldr::Parser do
         parser = Baldr::Parser.new(input)
         parser.error.should be_nil
         parser.envelopes.each do |envelope|
-          Baldr::Types.convert_before_render!(envelope)
+          Baldr::Types.convert_before_render!(envelope, parser.grammar)
         end
         output = Baldr::Renderer::X12.draw(parser.envelopes, {separators: parser.separators})
         output.bytes.to_a.should eq input.bytes.to_a
@@ -43,7 +43,7 @@ describe Baldr::Parser do
           component: '<'
         }
         grammar = Baldr::Test::CustomGrammar
-        parser = Baldr::Parser.new(input, separators: separators, version: grammar, grammar: grammar)
+        parser = Baldr::Parser.new(input, separators: separators, grammar: grammar)
         parser.error.should be_nil
         if parser.root_type == :envelope
           output = Baldr::Renderer::X12.draw(parser.envelopes, {separators: parser.separators})

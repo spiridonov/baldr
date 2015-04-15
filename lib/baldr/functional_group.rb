@@ -30,8 +30,8 @@ class Baldr::FunctionalGroup < Baldr::Segment
     trailer['GE02'] = group_control_number
   end
 
-  def sub_version
-    Baldr::Grammar.for_standard_version(version_release_industry_code)
+  def sub_version(grammar)
+    grammar.for_standard_version(version_release_industry_code)
   end
 
   def transactions

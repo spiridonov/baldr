@@ -321,7 +321,7 @@ describe Baldr::Builder do
 
     b.build_functional_groups
     b.prepare!
-    Baldr::Validator.validate!(b.envelope)
+    Baldr::Validator.validate!(b.envelope, Baldr::Grammar::Envelope)
 
     separators = {
       component: '>',
@@ -348,7 +348,7 @@ describe Baldr::Builder do
     b.prepare!
 
     lambda {
-      Baldr::Validator.validate!(b.envelope)
+      Baldr::Validator.validate!(b.envelope, Baldr::Grammar::Envelope)
     }.should raise_error(Baldr::Error::ValidationError)
 
   end

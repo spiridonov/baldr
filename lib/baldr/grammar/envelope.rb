@@ -10,6 +10,12 @@ module Baldr::Grammar::Envelope
     RECORD_DEFS
   end
 
+  def sub_grammar(segment)
+    if segment.id == 'GS'
+      Baldr::Grammar.for_standard_version(segment.version_release_industry_code)
+    end
+  end
+
   def validate_st!(segment)
     trailer = segment.children.last.segments.first
     total_number = segment.number_of_segments
@@ -40,20 +46,17 @@ module Baldr::Grammar::Envelope
   def validate_isa!(segment)
     trailer = segment.children.last.segments.first
     if trailer['IEA01'].to_i != segment.func_group_loop.segments.count
-      raise "wrong functional groups number: #{trailer['IEA01']} in IEA01, but real number is #{segment.func_group_loop.segments.count}"
+      raise Baldr::Error, "wrong functional groups number: #{trailer['IEA01']} in IEA01, but real number is #{segment.func_group_loop.segments.count}"
     end
     if trailer['IEA02'] != segment.interchange_control_number
-      raise "interchange control numbers don't match: #{trailer['IEA02']} in IEA02 and #{segment.interchange_control_number} in ISA13"
+      raise Baldr::Error, "interchange control numbers don't match: #{trailer['IEA02']} in IEA02 and #{segment.interchange_control_number} in ISA13"
     end
   end
 
   STRUCTURE = {
     id: 'ISA', min: 0, max: 99999, class: :envelope, level: [
       {id: 'TA1', min: 0, max: 99999},
-      {id: 'GS', min: 0, class: :functional_group, max: 99999, level: [
-        {id: 'ST', min: 0, class: :transaction, max: 99999},
-        {id: 'GE', min: 1, max: 1},
-      ]},
+      {id: 'GS', min: 0, class: :functional_group, max: 99999},
       {id: 'IEA', min: 1, max: 1}
     ]
   }.freeze
@@ -91,10 +94,10 @@ module Baldr::Grammar::Envelope
       {id: 'GE01', required: true, max: 6, type: :number, decimals: 0},
       {id: 'GE02', required: true, max: 9, type: :number, decimals: 0},
     ],
-    'ST' => [
-      {id: 'ST01', required: true, max: 3, type: :id},
-      {id: 'ST02', required: true, min: 4, max: 9, type: :string},
-    ],
+    # 'ST' => [
+    #   {id: 'ST01', required: true, max: 3, type: :id},
+    #   {id: 'ST02', required: true, min: 4, max: 9, type: :string},
+    # ],
     'IEA' => [
       {id: 'IEA01', required: true, max: 5, type: :number, decimals: 0},
       {id: 'IEA02', required: true, max: 9, type: :number, decimals: 0},

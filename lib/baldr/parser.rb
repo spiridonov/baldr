@@ -1,14 +1,15 @@
 class Baldr::Parser
 
-  attr_reader :error, :separators, :input, :root_type
+  attr_reader :error, :separators, :input, :root_type, :grammar
 
   def initialize(input, params = {})
-    @params = params
     @input = input
-
+    @grammar = params[:grammar]
+    @separators = params[:separators]
+    
     parse
 
-    if @params[:skip_validation] != true && successful?
+    if params[:skip_validation] != true && successful?
       validate
     end
   end
@@ -35,8 +36,8 @@ class Baldr::Parser
 
   def validate
     if @roots
-      @roots.each { |e| Baldr::Validator.validate!(e, @grammar, @version) }
-      @roots.each { |e| Baldr::Types.convert_after_parse!(e, @grammar, @version) }
+      @roots.each { |e| Baldr::Validator.validate!(e, @grammar) }
+      @roots.each { |e| Baldr::Types.convert_after_parse!(e, @grammar) }
     end
   rescue Baldr::Error => e
     @error = e.message
@@ -45,30 +46,26 @@ class Baldr::Parser
   protected
 
   def parse
-    detect_first_segment
+    @root_type = detect_first_segment
     if @root_type == :transaction
-      raise Baldr::Error::ParsingError, "separators must be manually defined for parsing transactions" unless @params[:separators]
-      @separators = @params[:separators]
-      @grammar = @params[:grammar] || Baldr::Grammar::Transaction
-      raise Baldr::Error::ParsingError, "grammar version must be manually defined for parsing transactions" unless @params[:version]
-      @version = @params[:version]
+      raise Baldr::Error::ParsingError, "separators must be manually defined for parsing transactions" unless @separators
+      @grammar ||= Baldr::Grammar::Transaction
+    elsif @root_type == :envelope
+      @separators ||= detect_separators
+      @grammar ||= Baldr::Grammar::Envelope
     else
-      detect_separators
-      @grammar = @params[:grammar] || Baldr::Grammar::Envelope
-      @version = nil
+      raise Baldr::Error::ParsingError, "doesn't begin with ISA or ST..."
     end
-    @roots = build_tree(split_segments, @grammar, @version)
+    @roots = build_tree(split_segments(@separators), @grammar)
   rescue Baldr::Error => e
     @error = e.message
   end
 
   def detect_first_segment
     if @input[0..2] == 'ISA'
-      @root_type = :envelope
+      :envelope
     elsif @input[0..1] == 'ST'
-      @root_type = :transaction
-    else
-      raise Baldr::Error::ParsingError, "doesn't begin with ISA or ST..."
+      :transaction
     end
   end
 
@@ -87,14 +84,14 @@ class Baldr::Parser
       segment << b
     end
 
-    @separators = {
+    {
       element: element.chr,
       segment: segment,
       component: component.chr
     }
   end
 
-  def split_segments
+  def split_segments(separators)
     segments = []
     buffer = []
     skip = 0
@@ -104,9 +101,9 @@ class Baldr::Parser
       if skip > 0
         skip -= 1
       else
-        if b == @separators[:segment].first
-          segments << buffer.pack('c*').split(@separators[:element])
-          skip = @separators[:segment].length - 1
+        if b == separators[:segment].first
+          segments << buffer.pack('c*').split(separators[:element])
+          skip = separators[:segment].length - 1
           buffer = []
         else
           buffer << b
@@ -119,12 +116,12 @@ class Baldr::Parser
     segments
   end
 
-  def build_tree(source, grammar, version = nil)
-    loop = build_segment(source.to_enum, grammar.structure, version)
+  def build_tree(source, grammar)
+    loop = build_segment(source.to_enum, grammar, grammar.structure)
     loop.segments
   end
 
-  def build_segment(enumerator, structure, version)
+  def build_segment(enumerator, grammar, structure)
     current = enumerator.peek
 
     while structure[:id] == current[0]
@@ -135,17 +132,16 @@ class Baldr::Parser
 
       enumerator.next
 
-      version ||= segment.sub_version
-      sub_grammar = segment.sub_grammar(version)
+      sub_grammar = grammar.sub_grammar(segment) if grammar.respond_to?(:sub_grammar)
 
       if sub_grammar
         sub_grammar.structure.fetch(:level, []).each do |s|
-          child = build_segment(enumerator, s, version)
+          child = build_segment(enumerator, sub_grammar, s)
           segment.children << child if child
         end
       else
         structure.fetch(:level, []).each do |s|
-          child = build_segment(enumerator, s, version)
+          child = build_segment(enumerator, grammar, s)
           segment.children << child if child
         end
       end

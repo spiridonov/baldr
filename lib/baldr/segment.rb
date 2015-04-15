@@ -102,11 +102,11 @@ class Baldr::Segment
     end
   end
 
-  def sub_version
+  def sub_version(grammar)
 
   end
 
-  def sub_grammar(version)
+  def sub_grammar(grammar, version)
 
   end
 

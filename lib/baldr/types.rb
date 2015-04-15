@@ -2,9 +2,8 @@ module Baldr::Types
 
   extend self
 
-  def convert_after_load!(envelope, grammar = nil, version = nil)
-    grammar ||= Baldr::Grammar::Envelope
-    convert_tree!(envelope, grammar, version) do |record_def, element|
+  def convert_after_load!(envelope, grammar)
+    convert_tree!(envelope, grammar) do |record_def, element|
       case record_def[:type]
         when :number
           if element.is_a? String
@@ -22,9 +21,8 @@ module Baldr::Types
     end
   end
 
-  def convert_after_parse!(envelope, grammar = nil, version = nil)
-    grammar ||= Baldr::Grammar::Envelope
-    convert_tree!(envelope, grammar, version) do |record_def, element|
+  def convert_after_parse!(envelope, grammar)
+    convert_tree!(envelope, grammar) do |record_def, element|
       case record_def[:type]
         when :number
           if element.is_a? String
@@ -42,9 +40,8 @@ module Baldr::Types
     end
   end
 
-  def convert_before_render!(envelope, grammar = nil, version = nil)
-    grammar ||= Baldr::Grammar::Envelope
-    convert_tree!(envelope, grammar, version) do |record_def, element|
+  def convert_before_render!(envelope, grammar)
+    convert_tree!(envelope, grammar) do |record_def, element|
       case record_def[:type]
         when :number
           if element.is_a? String
@@ -64,7 +61,7 @@ module Baldr::Types
 
   protected
 
-  def convert_tree!(segment, grammar, version, &block)
+  def convert_tree!(segment, grammar, &block)
     record_defs = grammar.record_defs
 
     record_defs[segment.id].each.with_index do |r, i|
@@ -73,12 +70,11 @@ module Baldr::Types
       end
     end
 
-    version ||= segment.sub_version
-    sub_grammar = segment.sub_grammar(version)
+    sub_grammar = grammar.sub_grammar(segment) if grammar.respond_to?(:sub_grammar)
 
     segment.children.each do |loop|
       loop.segments.each do |child|
-        convert_tree!(child, sub_grammar || grammar, version, &block)
+        convert_tree!(child, sub_grammar || grammar, &block)
       end
     end
   end

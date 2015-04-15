@@ -1,6 +1,14 @@
 module Baldr::Grammar::Version4010
 
-  def self.for_transaction_set(id)
+  extend self
+
+  def sub_grammar(segment)
+    if segment.id == 'ST'
+      for_transaction_set(segment.transaction_set_code)
+    end
+  end
+
+  def for_transaction_set(id)
     const_name = "Set#{id}"
     if self.const_defined?(const_name)
       self.const_get(const_name)
@@ -8,6 +16,21 @@ module Baldr::Grammar::Version4010
       raise Baldr::Error, "unknown transaction set: #{id}"
     end
   end
+
+  def record_defs
+    RECORD_DEFS
+  end
+
+  def structure
+    STRUCTURE
+  end
+
+  STRUCTURE = {
+    id: 'GS', min: 0, class: :functional_group, max: 99999, level: [
+      {id: 'ST', min: 0, class: :transaction, max: 99999},
+      {id: 'GE', min: 1, max: 1},
+    ]
+  }.freeze
 
   RECORD_DEFS = {
     'AAA' => [
