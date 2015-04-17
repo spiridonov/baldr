@@ -18,12 +18,8 @@ class Baldr::Transaction < Baldr::Segment
     trailer['SE02'] = transaction_control_number
   end
 
-  def sub_grammar(grammar, version)
-    grammar.for_transaction_set(transaction_set_code)
-  end
-
-  def functional_group(version)
-    version.for_transaction_set(transaction_set_code)::FUNCTIONAL_GROUP
+  def functional_group(grammar)
+    grammar.for_transaction_set(transaction_set_code)::FUNCTIONAL_GROUP
   end
 
 end

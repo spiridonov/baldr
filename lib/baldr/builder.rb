@@ -37,7 +37,7 @@ class Baldr::Builder
   end
 
   def build_functional_groups
-    functional_groups = @transactions.group_by { |t| t.functional_group(version) }
+    functional_groups = @transactions.group_by { |t| t.functional_group(grammar) }
     functional_groups.each do |group_id, transactions|
       group = Baldr::FunctionalGroup.new
       group.functional_identifier_code = group_id
@@ -53,7 +53,7 @@ class Baldr::Builder
 
   protected
 
-  def version
+  def grammar
     @version ||= Baldr::Grammar.for_standard_version(@envelope.standard_version_number)
   end
 

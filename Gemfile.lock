@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    baldr (0.3.18)
+    baldr (0.3.19)
       activesupport
 
 GEM
