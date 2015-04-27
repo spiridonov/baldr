@@ -26,7 +26,7 @@ class GoodBuilderFromRealLife
       segment_n1(st)
 
       st.S5 do
-        S501 '1'
+        S501 1
         S502 'CL'
 
         G62 do
@@ -48,10 +48,10 @@ class GoodBuilderFromRealLife
         AT8 do
           AT801 'E'
           AT802 'L'
-          AT803 '145'
-          AT804 '8'
+          AT803 145.0
+          AT804 8
           AT806 'E'
-          AT807 '0'
+          AT807 0
         end
 
         N1 do
@@ -72,16 +72,16 @@ class GoodBuilderFromRealLife
       end
 
       st.S5 do
-        S501 '2'
+        S501 2
         S502 'CU'
 
         AT8 do
           AT801 'E'
           AT802 'L'
-          AT803 '145'
-          AT804 '8'
+          AT803 145.0
+          AT804 8
           AT806 'E'
-          AT807 '0'
+          AT807 0
         end
 
         N1 do
@@ -103,20 +103,20 @@ class GoodBuilderFromRealLife
         OID do
           OID02 'K0822'
           OID04 'PC'
-          OID05 '1'
+          OID05 1
           OID06 'L'
-          OID07 '145'
+          OID07 145.0
           OID08 'E'
-          OID09 '0'
+          OID09 0
         end
       end
 
       st.L3 do
-        L301 '145'
+        L301 145
         L302 'G'
-        L309 '0'
+        L309 0
         L310 'E'
-        L311 '8'
+        L311 8
         L312 'L'
       end
     end
@@ -321,6 +321,7 @@ describe Baldr::Builder do
 
     b.build_functional_groups
     b.prepare!
+    Baldr::Types.convert_before_render!(b.envelope, Baldr::Grammar::Envelope)
     Baldr::Validator.validate!(b.envelope, Baldr::Grammar::Envelope)
 
     separators = {

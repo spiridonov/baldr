@@ -64,7 +64,6 @@ module Baldr::Validator
 
   def check_id(r, element)
     check_max_and_min_for_string(r, element)
-
   end
 
   def check_max_and_min_for_string(r, element)
@@ -78,19 +77,32 @@ module Baldr::Validator
   end
 
   def check_time(r, element)
-
+    if r[:max] && element.length > r[:max]
+      raise Baldr::Error::ValidationError,  "#{r[:id]} is too long: #{element.length} characters, maximum #{r[:max]}"
+    end
   end
 
   def check_date(r, element)
-
+    if r[:max] && element.length > r[:max]
+      raise Baldr::Error::ValidationError,  "#{r[:id]} is too long: #{element.length} characters, maximum #{r[:max]}"
+    end
   end
 
   def check_number(r, element)
-
+    value = element.to_s
+    if r[:max] && value.length > r[:max]
+      raise Baldr::Error::ValidationError,  "#{r[:id]} is too long: #{value.length} characters, maximum #{r[:max]}"
+    end
+    if value.match(/[^\d-]/)
+      raise Baldr::Error::ValidationError,  "#{r[:id]} has invalid symbols: #{value}"
+    end
   end
 
   def check_real(r, element)
-
+    value = element.to_s
+    if r[:max] && value.length > r[:max]
+      raise Baldr::Error::ValidationError,  "#{r[:id]} is too long: #{value.length} characters, maximum #{r[:max]}"
+    end
   end
 
   def check_complex(r, element)

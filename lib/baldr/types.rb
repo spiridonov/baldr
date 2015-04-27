@@ -43,12 +43,22 @@ module Baldr::Types
   def convert_before_render!(envelope, grammar)
     convert_tree!(envelope, grammar) do |record_def, element|
       case record_def[:type]
+        when :real
+          if element.is_a? String
+            element
+          else
+            if (element - element.floor).zero?
+              element.truncate.to_s
+            else
+              element.round(2).to_s
+            end
+          end
         when :number
           if element.is_a? String
             element
           else
             if record_def[:decimals] == 0
-              element
+              element.to_s
             else
               (element * (10.0 ** record_def[:decimals])).round.to_s
             end
