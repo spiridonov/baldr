@@ -81,12 +81,11 @@ output = Baldr::Renderer::X12.draw(envelope, {separators: separators})
 
 ## TODO
 
-* write validators for `:number`, `:complex`, `:real`, `:time` and `:date` datatypes
+* write validators for `:complex` datatype
 * import grammars for the rest transaction sets
 * find more examples of EDI files for tests
 * reading/writing components (`:complex` data type)
 * clarify interchange version numbers
-* add a way to set user-customized grammars
 
 ## Contributing
 
